@@ -19,6 +19,7 @@ data Stmt where
   Block  :: Prog -> Stmt
   If     :: BExp -> Stmt -> Stmt -> Stmt
   Repeat :: Exp -> Stmt -> Stmt
+  While  :: BExp -> Stmt -> Stmt
 
 data Exp where
   Lit   :: Nat -> Exp
@@ -85,6 +86,9 @@ execStmt (If bexp s1 s2) m
   | otherwise = execStmt s2 m
 execStmt (Repeat e s) m = execRepeat repeatTimes s m where
   repeatTimes = evalExp e m
+execStmt (While b s) m
+  | evalBExp b m = execStmt (While b s) (execStmt s m)
+  | otherwise    = m
 
 ------------------------------------------------------------
 
